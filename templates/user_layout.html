@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'jquery/jquery-3.3.1.js' %}"></script>
+    <script src="{% static 'layui/layui.js' %}"></script>
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+
+        .overflow {
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .overflow:hover {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: initial;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/user_show/"> 政务服务信息查询系统 </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/user_display/" target="_blank">信息展示</a></li>
+                <li><a href="/user_charts/" target="_blank">信息图表</a></li>
+                <!--<li><a href="/display_1/" target="_blank">分析结果</a></li>-->
+                <li><a href="/display_2/" target="_blank">文本分类</a></li>
+                <li><a href="/display_3/" target="_blank">回归预测</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">登录成功（普通用户） <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/login/">退出登陆</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div>
+    {% block content %}{% endblock %}
+</div>
+{% block js %}{% endblock %}
+</body>
+
+<footer>
+    <div class="container-fluid" style="padding-top: 40px;">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="jumbotron">
+                    <div class="container">
+                        <center>
+                            <p>Copyright [2023] by [SongHuawei] </p>
+                            <p><a href="http://xxxy.lzu.edu.cn/" target="_blank">兰州大学信息科学与工程学院</a></p>
+                            <p><a href="https://github.com/SongHuawei" target="_blank">我的GitHub</a></p>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

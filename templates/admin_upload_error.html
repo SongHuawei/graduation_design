@@ -1,0 +1,37 @@
+{% extends 'admin_layout.html' %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"> 问政信息批量上传 </h3>
+            </div>
+        </div>
+    </div>
+    <div style="height: 100px">
+        {% if error %}
+            <h3 style="text-align: center">{{ error }}</h3>
+            <br><br>
+            <div>
+                <a href="/admin_upload/" style="text-align: center">
+                    <p>返回上传</p>
+                </a>
+            </div>
+        {% endif %}
+        {% if success_count %}
+            <p style="text-align: center">成功导入 {{ success_count }} 条记录。</p>
+        {% endif %}
+        {% if fail_count %}
+            <p style="text-align: center">有 {{ fail_count }} 条记录导入失败。</p>
+            <div>
+                <a href="/admin_upload/" style="text-align: center">
+                    <p>继续上传</p>
+                </a>
+            </div>
+            <div>
+                <a href="/admin_show/" style="text-align: center">
+                    <p>返回主页</p>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

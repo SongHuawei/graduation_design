@@ -1,0 +1,571 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>大屏界面</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" media="all"/>
+    <script src="{% static 'js/echarts.js' %}" charset="utf-8"></script>
+</head>
+
+<body>
+<!-- 头部标题与跳转链接 -->
+<div class="bnt">
+    <div class="topbnt_left fl">
+        <ul>
+            <!--<li><a href="/display_1/">分析结果</a></li>-->
+            <li><a href="/display_2/">文本分类</a></li>
+            <li><a href="/display_3/">回归预测</a></li>
+        </ul>
+    </div>
+    <h1 class="tith1 fl">全局数据展示与分析</h1>
+    <div class="topbnt_right fr">
+        <ul>
+            <li><a href="/admin_show/">返回首页</a></li>
+            <li><a href="/user_charts/" target="_blank">图表展示</a></li>
+        </ul>
+    </div>
+</div>
+<!-- 主体部分左侧 -->
+<div class="puleft fl">
+    <!-- 左侧第一个框 -->
+    <div class="pulefttop">
+        <h2 class="tith2">
+            <span>分地区数据总量统计</span>
+        </h2>
+        <div class="lefttoday_tit">
+            <p class="fr">2007-11-02 至 {{ data_lasted.0.Time }}</p>
+        </div>
+        <div class="box pbox">
+            <div class="lefttoday_bar pulefttoday_bar fl">
+                <div id="global_chart_1" class="global_chart_1"></div>
+            </div>
+            <div class="pvr fr pulefttoday_bar2">
+                <div id="global_chart1_other" class="global_chart1_other"></div>
+            </div>
+        </div>
+    </div>
+    <!-- 左侧第二个框 -->
+    <div class="pulefttop">
+        <h2 class="tith2">
+            <span>分年份数据总量汇总</span>
+        </h2>
+        <div class="lefttoday_tit">
+            <p class="fr">2007-11-02 至 {{ data_lasted.0.Time }}</p>
+        </div>
+        <div class="box pbox">
+            <div class="lefttoday_bar pulefttoday_bar fl">
+                <div id="global_chart_2" class="global_chart_2"></div>
+            </div>
+            <div class="pvr fr pulefttoday_bar2">
+                <div id="global_chart2_other" class="global_chart2_other"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 主体部分中间 -->
+<div class="fl pt6 puleft2">
+    <!-- 中间第一个框 -->
+    <div class="pmidd_bott">
+        <div class="pumiddboxttop2 fl">
+            <h2 class="tith2 pt4">最新问政信息</h2>
+            <div class="lefttoday_tit ">
+                <p class="fl">总数：{{ data_count }}</p>
+            </div>
+            <div class="left2_table pumiddboxttop2_cont">
+                <ul>
+                    <li>
+                        <p class="text_l0" data-title0="{{ data_lasted.0.Title }}"
+                           data-content0="{{ data_lasted.0.Content }}">{{ data_lasted.0.Title }}</p>
+                        <div class="tooltip" id="tooltip0"></div>
+                        <p class="text_r">所属城市：{{ data_lasted.0.City }} 问政时间：{{ data_lasted.0.Time }}</p>
+                    </li>
+                    <li class="bg">
+                        <p class="text_l1" data-title1="{{ data_lasted.1.Title }}"
+                           data-content1="{{ data_lasted.1.Content }}">{{ data_lasted.1.Title }}</p>
+                        <div class="tooltip" id="tooltip1"></div>
+                        <p class="text_r">所属城市：{{ data_lasted.1.City }} 问政时间：{{ data_lasted.1.Time }}</p>
+                    </li>
+                    <li>
+                        <p class="text_l2" data-title2="{{ data_lasted.2.Title }}"
+                           data-content2="{{ data_lasted.2.Content }}">{{ data_lasted.2.Title }}</p>
+                        <div class="tooltip" id="tooltip2"></div>
+                        <p class="text_r">所属城市：{{ data_lasted.2.City }} 问政时间：{{ data_lasted.2.Time }}</p>
+                    </li>
+                    <li class="bg">
+                        <p class="text_l3" data-title3="{{ data_lasted.3.Title }}"
+                           data-content3="{{ data_lasted.3.Content }}">{{ data_lasted.3.Title }}</p>
+                        <div class="tooltip" id="tooltip3"></div>
+                        <p class="text_r">所属城市：{{ data_lasted.3.City }} 问政时间：{{ data_lasted.3.Time }}</p>
+                    </li>
+                    <li>
+                        <p class="text_l4" data-title4="{{ data_lasted.4.Title }}"
+                           data-content4="{{ data_lasted.4.Content }}">{{ data_lasted.4.Title }}</p>
+                        <div class="tooltip" id="tooltip4"></div>
+                        <p class="text_r">所属城市：{{ data_lasted.4.City }} 问政时间：{{ data_lasted.4.Time }}</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- 中间第二个框 -->
+    <div class="pmiddboxtbott">
+        <h2 class="tith2 pt2">情感分析折线图</h2>
+        <div class="lefttoday_tit">
+            <p class="fr">2007-11-02 至 {{ data_lasted.0.Time }}</p>
+        </div>
+        <div class="box qinggan">
+            <div id="global_chart_3" class="global_chart_3"></div>
+            <!-- 调整图表位置，echarts由js自行划定css格式，但这里top数据有问题 -->
+            <!--
+            <script>
+                window.onload = function () {
+                    var canvas = document.querySelector('canvas[data-zr-dom-id="zr_0"]');
+                    //console.log(canvas)
+                    canvas.style.top = '-45px';
+                };
+            </script>
+            -->
+        </div>
+    </div>
+</div>
+<!-- 主体部分右侧 -->
+<div class="mr_right fl">
+    <div class="purightboxtop">
+        <h2 class="tith2 pt6">问政内容分析词云图</h2>
+        <div class="lefttoday_tit">
+            <p class="fr">2007-11-02 至 {{ data_lasted.0.Time }}</p>
+        </div>
+        <img src="/static/img/global_chart4_content.png" alt="当前图片未生成">
+    </div>
+    <div class="purightboxmidd">
+        <h2 class="tith2 pt6">回复内容分析词云图</h2>
+        <div class="lefttoday_tit">
+            <p class="fr">2007-11-02 至 {{ data_lasted.0.Time }}</p>
+        </div>
+        <img src="/static/img/global_chart4_repcon.png" alt="当前图片未生成">
+    </div>
+</div>
+
+<!-- js生成图表 -->
+<script>
+    // 获取元素和提示框
+    var element0 = document.querySelector('.text_l0');
+    var tooltip0 = document.getElementById('tooltip0');
+    // 绑定事件处理程序
+    element0.addEventListener('mouseover', function () {
+        // 获取元素的 title 和 content
+        var Title0 = element0.getAttribute('data-title0');
+        var Content0 = element0.getAttribute('data-content0');
+        // 设置提示框的内容和位置
+        tooltip0.innerHTML = Content0;
+        tooltip0.style.top = (element0.offsetTop - tooltip0.offsetHeight) + 'px';
+        tooltip0.style.left = element0.offsetLeft + 'px';
+        // 显示提示框
+        tooltip0.style.visibility = 'visible';
+    });
+    // 绑定事件处理程序
+    element0.addEventListener('mouseout', function () {
+        // 隐藏提示框
+        tooltip0.style.visibility = 'hidden';
+    });
+</script>
+<script>
+    // 获取元素和提示框
+    var element1 = document.querySelector('.text_l1');
+    var tooltip1 = document.getElementById('tooltip1');
+    // 绑定事件处理程序
+    element1.addEventListener('mouseover', function () {
+        // 获取元素的 title 和 content
+        var Title1 = element1.getAttribute('data-title1');
+        var Content1 = element1.getAttribute('data-content1');
+        // 设置提示框的内容和位置
+        tooltip1.innerHTML = Content1;
+        tooltip1.style.top = (element1.offsetTop - tooltip1.offsetHeight) + 'px';
+        tooltip1.style.left = element1.offsetLeft + 'px';
+        // 显示提示框
+        tooltip1.style.visibility = 'visible';
+    });
+    // 绑定事件处理程序
+    element1.addEventListener('mouseout', function () {
+        // 隐藏提示框
+        tooltip1.style.visibility = 'hidden';
+    });
+</script>
+<script>
+    // 获取元素和提示框
+    var element2 = document.querySelector('.text_l2');
+    var tooltip2 = document.getElementById('tooltip2');
+    // 绑定事件处理程序
+    element2.addEventListener('mouseover', function () {
+        // 获取元素的 title 和 content
+        var Title2 = element2.getAttribute('data-title2');
+        var Content2 = element2.getAttribute('data-content2');
+        // 设置提示框的内容和位置
+        tooltip2.innerHTML = Content2;
+        tooltip2.style.top = (element2.offsetTop - tooltip2.offsetHeight) + 'px';
+        tooltip2.style.left = element2.offsetLeft + 'px';
+        // 显示提示框
+        tooltip2.style.visibility = 'visible';
+    });
+    // 绑定事件处理程序
+    element2.addEventListener('mouseout', function () {
+        // 隐藏提示框
+        tooltip2.style.visibility = 'hidden';
+    });
+</script>
+<script>
+    // 获取元素和提示框
+    var element3 = document.querySelector('.text_l3');
+    var tooltip3 = document.getElementById('tooltip3');
+    // 绑定事件处理程序
+    element3.addEventListener('mouseover', function () {
+        // 获取元素的 title 和 content
+        var Title3 = element3.getAttribute('data-title3');
+        var Content3 = element3.getAttribute('data-content3');
+        // 设置提示框的内容和位置
+        tooltip3.innerHTML = Content3;
+        tooltip3.style.top = (element3.offsetTop - tooltip3.offsetHeight) + 'px';
+        tooltip3.style.left = element3.offsetLeft + 'px';
+        // 显示提示框
+        tooltip3.style.visibility = 'visible';
+    });
+    // 绑定事件处理程序
+    element3.addEventListener('mouseout', function () {
+        // 隐藏提示框
+        tooltip3.style.visibility = 'hidden';
+    });
+</script>
+<script>
+    // 获取元素和提示框
+    var element4 = document.querySelector('.text_l4');
+    var tooltip4 = document.getElementById('tooltip4');
+    // 绑定事件处理程序
+    element4.addEventListener('mouseover', function () {
+        // 获取元素的 title 和 content
+        var Title4 = element4.getAttribute('data-title4');
+        var Content4 = element4.getAttribute('data-content4');
+        // 设置提示框的内容和位置
+        tooltip4.innerHTML = Content4;
+        tooltip4.style.top = (element4.offsetTop - tooltip4.offsetHeight) + 'px';
+        tooltip4.style.left = element4.offsetLeft + 'px';
+        // 显示提示框
+        tooltip4.style.visibility = 'visible';
+    });
+    // 绑定事件处理程序
+    element4.addEventListener('mouseout', function () {
+        // 隐藏提示框
+        tooltip4.style.visibility = 'hidden';
+    });
+</script>
+<!-- global_chart_1 -->
+<script>
+    //处理初始数据
+    var data_set1 = JSON.parse('{{ data1|safe }}');
+    //console.log(data_set1)
+    //处理数据
+    var pie_set1 = [];
+    for (var i1 = 0; i1 < data_set1.length; i1++) {
+        var item1 = {};
+        if (data_set1[i1].count1 > 0)
+            item1.value = data_set1[i1].count1;
+        if (data_set1[i1].City !== null)
+            item1.name = data_set1[i1].City;
+        else if (data_set1[i1].City === null)
+            item1.name = '未知城市'
+        pie_set1.push(item1);
+        //console.log(item1)
+    }
+    //console.log(pie_set1)
+    //绘制饼图
+    var myChart1 = echarts.init(document.getElementById('global_chart_1'));
+    var global_chart_1 = {
+        tooltip: {
+            trigger: 'item'
+        },
+        series: [
+            {
+                name: 'Access From',
+                type: 'pie',
+                radius: ['30%', '90%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: false,
+                        fontSize: 40,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: pie_set1,
+            }
+        ]
+    };
+    myChart1.setOption(global_chart_1);
+</script>
+<!-- global_chart_2 -->
+<script>
+    //处理初始数据
+    var data_set2 = JSON.parse('{{ data2|safe }}');
+    //console.log(data_set2)
+    //处理数据
+    var pie_set2 = [];
+    for (var i2 = 0; i2 < data_set2.length; i2++) {
+        var item2 = {};
+        if (data_set2[i2].count2 > 0)
+            item2.value = data_set2[i2].count2;
+        if (data_set2[i2].date !== null)
+            item2.name = data_set2[i2].date;
+        else if (data_set2[i2].date === null)
+            item2.name = '未知时间'
+        pie_set2.push(item2);
+        //console.log(item2)
+    }
+    //console.log(pie_set2)
+    //绘制饼图
+    var myChart2 = echarts.init(document.getElementById('global_chart_2'));
+    var global_chart_2 = {
+        tooltip: {
+            trigger: 'item'
+        },
+        series: [
+            {
+                name: 'Access From',
+                type: 'pie',
+                radius: ['30%', '90%'],
+                avoidLabelOverlap: false,
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: false,
+                        fontSize: 40,
+                        fontWeight: 'bold'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: pie_set2,
+            }
+        ]
+    };
+    myChart2.setOption(global_chart_2);
+</script>
+<!-- global_chart_1右侧的图 -->
+<script>
+    //console.log(pie_set1)
+    var city1 = []
+    var count1 = []
+    for (x = 0; x < pie_set1.length; x++) {
+        city1[x] = pie_set1[x].name
+        count1[x] = pie_set1[x].value
+    }
+    //console.log(city1)
+    //console.log(count1)
+    var myChart1_other = echarts.init(document.getElementById('global_chart1_other'));
+    var global_chart1_other = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            top: '5%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [false, 0.01],
+            axisLabel: {
+                show: false,
+                color: 'red'
+            },
+            splitLine: {
+                show: false
+            } // 去掉竖直白线
+        },
+        yAxis: {
+            type: 'category',
+            data: city1,
+            axisLine: {
+                show: false
+            },
+            axisTick: {
+                show: false
+            },
+            axisLabel: {
+                color: 'red',
+                fontSize: 10
+            }
+        },
+        series: [
+            {
+                name: '数量',
+                type: 'bar',
+                barWidth: 8,  // 柱子的宽度
+                barCategoryGap: '10%',  // 柱子之间的间距
+                itemStyle: {
+                    normal: {
+                        color: function (params) {
+                            var colorList = [
+                                '#f60404', '#ec8f6c', '#f3dc3d', '#79f64f', '#4ceec1', '#2730e1',
+                                '#930a0a', '#ec8f6c', '#f3dc3d', '#79f64f', '#4ceec1',
+                            ];
+                            return colorList[params.dataIndex];
+                        }
+                    }
+                },
+                label: {
+                    show: false,
+                    position: 'right',
+                    color: 'red',
+                    fontSize: 10
+                },
+                data: count1
+            }
+        ]
+    };
+    myChart1_other.setOption(global_chart1_other);
+</script>
+<!-- global_chart_2右侧的图 -->
+<script>
+    //console.log(pie_set2)
+    var date2 = []
+    var count2 = []
+    for (y = 0; y < pie_set2.length; y++) {
+        date2[y] = pie_set2[y].name
+        count2[y] = pie_set2[y].value
+    }
+    console.log(date2)
+    console.log(count2)
+    var myChart2_other = echarts.init(document.getElementById('global_chart2_other'));
+    var global_chart2_other = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            top: '3%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [false, 0.01],
+            axisLabel: {
+                show: false,
+                color: 'red'
+            },
+            splitLine: {
+                show: false
+            } // 去掉竖直白线
+        },
+        yAxis: {
+            type: 'category',
+            data: date2,
+            axisLine: {
+                show: false
+            },
+            axisTick: {
+                show: false
+            },
+            axisLabel: {
+                color: 'red',
+                fontSize: 10
+            }
+        },
+        series: [
+            {
+                name: '数量',
+                type: 'bar',
+                barWidth: 8,  // 柱子的宽度
+                barCategoryGap: '10%',  // 柱子之间的间距
+                itemStyle: {
+                    normal: {
+                        color: function (params) {
+                            var colorList = [
+                                '#f60404', '#ec8f6c', '#f3dc3d', '#79f64f', '#4ceec1', '#2730e1',
+                                '#930a0a', '#ec8f6c', '#f3dc3d', '#79f64f', '#4ceec1', "#f60404",
+                                '#f60404', '#ec8f6c', '#f3dc3d'
+                            ];
+                            return colorList[params.dataIndex];
+                        }
+                    }
+                },
+                label: {
+                    show: false,
+                    position: 'right',
+                    color: 'red',
+                    fontSize: 10
+                },
+                data: count2
+            }
+        ]
+    };
+    myChart2_other.setOption(global_chart2_other);
+</script>
+<!-- global_chart_3 -->
+<script>
+    //获取初始数据
+    var data_set3 = JSON.parse('{{ data3|safe }}');
+    console.log(data_set3)
+    //处理折线图数据
+    var time_set3 = [];
+    var count_set3 = [];
+    for (var i3 = 0; i3 < data_set3.length; i3++) {
+        time_set3.push(data_set3[i3].date3);
+        count_set3.push(data_set3[i3].sentiment);
+    }
+    //console.log(time_set3)
+    //console.log(count_set3)
+    //绘制折线图
+    var myChart3 = echarts.init(document.getElementById('global_chart_3'));
+    var global_chart_3 = {
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider',
+                height: 20
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——分数（数值越大表示情感越正向）']
+        },
+        xAxis: {
+            data: time_set3
+        },
+        yAxis: {
+            min: function (count_set3) {
+                return count_set3.min;
+            }
+        },
+        series: [{
+            name: '分数',
+            type: 'line',
+            data: count_set3
+        }]
+    };
+    myChart3.setOption(global_chart_3);
+</script>
+</body>
+</html>

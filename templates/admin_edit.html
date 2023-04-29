@@ -1,0 +1,109 @@
+{% extends 'admin_layout.html' %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"> 修改政务服务信息 </h3>
+            </div>
+            <div class="panel-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>反馈人</label>
+                        <input type="text" class="form-control" placeholder="反馈人" name="QueSub" value="{{ obj.QueSub }}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>选择城市</label>
+                        <select class="form-control" name="City">
+                            <option value="">点击选择</option>
+                            <option value="赣州市">赣州市</option>
+                            <option value="贵港市">贵港市</option>
+                            <option value="惠州市">惠州市</option>
+                            <option value="济宁市">济宁市</option>
+                            <option value="泸州市">泸州市</option>
+                            <option value="南阳市">南阳市</option>
+                            <option value="内江市">内江市</option>
+                            <option value="十堰市">十堰市</option>
+                            <option value="温州市">温州市</option>
+                            <option value="永州市">永州市</option>
+                            <option value="肇庆市">肇庆市</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>标题</label>
+                        <input type="text" class="form-control" placeholder="标题" name="Title" value="{{ obj.Title }}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>类型</label>
+                        <select class="form-control" name="Class">
+                            <option value="">点击选择</option>
+                            <option value="赣州市">投诉</option>
+                            <option value="贵港市">咨询</option>
+                            <option value="贵港市">建议</option>
+                        </select>
+                    </div>
+                    <div class="layui-col-md6">
+                        <label>选择日期</label>
+                        <!--<input type="datetime-local" class="form-control" placeholder="日期" name="Time"/>-->
+                        <div class="layui-input-inline" style="margin-top: 0.3em;">
+                            <input type="text" id="begin_date" name="Time" placeholder="提问日期" class="layui-input"
+                                   style="width: 200px; height:30px; font-size: 11px " value="{{ obj.Time }}">
+                        </div>
+                        <div class="layui-input-inline" style="margin-top:0.3em;">
+                            <input type="text" id="end_date" name="RepTime" placeholder="回复日期" class="layui-input"
+                                   style=" width: 200px; height: 30px; font-size: 11px " value="{{ obj.RepTime }}">
+                        </div>
+                    </div>
+                    <!-- 初始化日期选择器的JavaScript代码 -->
+                    <script>
+                        layui.use('laydate', function () {
+                            var laydate = layui.laydate;
+                            // 初始化开始日期选择器
+                            laydate.render({
+                                elem: '#begin_date',
+                                format: 'yyyy-MM-dd', // 日期格式
+                                trigger: 'click', // 点击触发选择器
+                                done: function (value) {
+                                    // 选择后的回调函数
+                                    console.log(value);
+                                }
+                            });
+                            // 初始化结束日期选择器
+                            laydate.render({
+                                elem: '#end_date',
+                                format: 'yyyy-MM-dd', // 日期格式
+                                trigger: 'click', // 点击触发选择器
+                                done: function (value) {
+                                    // 选择后的回调函数
+                                    console.log(value);
+                                }
+                            });
+                        });
+                    </script>
+                    <br><br><br>
+                    <div class="form-group">
+                        <label>内容</label><br>
+                        <textarea name="Content" rows="4" cols="90">{{ obj.Content }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>回复部门</label>
+                        <input type="text" class="form-control" placeholder="相关单位" name="RepDep" value="{{ obj.RepDep }}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>回复内容</label><br>
+                        <textarea name="RepCon" rows="4" cols="90">{{ obj.RepCon }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>相关链接</label>
+                        <input type="url" class="form-control" placeholder="URL" name="URL" value="{{ obj.URL }}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>阅读量</label>
+                        <input type="number" min="0" max="10" step="1" name="reading" value="{{ obj.reading }}"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提 交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'admin_layout.html' %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"> 问政信息批量上传 </h3>
+            </div>
+            <form method="post" enctype="multipart/form-data" action="/admin_multi/">
+                {% csrf_token %}
+                <div class="container">
+                    <div class="form-group">
+                        <br><label>点击下方按钮上传文件</label><br><br>
+                        <input type="file" name="upload" id="exampleInputFile"><br>
+                        <p class="help-block">
+                            请上传符合要求的excel文件：请注意时间格式为yyyy-mm-dd hh:mm:ss
+                        </p><br>
+                        <input type="submit" value="上传" class="btn btn-primary">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

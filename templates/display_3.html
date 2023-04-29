@@ -1,0 +1,987 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>回归预测</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'jquery/jquery-3.3.1.js' %}"></script>
+    <script src="{% static 'layui/layui.js' %}"></script>
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+
+        .overflow {
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .overflow:hover {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: initial;
+        }
+
+        .my-table {
+            border-collapse: collapse;
+        }
+
+        .my-table th, .my-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .my-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/user_show/"> 政务服务信息查询系统 </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/user_display/" target="_blank">信息展示</a></li>
+                <li><a href="/user_charts/" target="_blank">信息图表</a></li>
+                <!--<li><a href="/display_1/" target="_blank">分析结果</a></li>-->
+                <li><a href="/display_2/" target="_blank">文本分类</a></li>
+                <li><a href="/display_3/" target="_blank">回归预测</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">登录成功（普通用户） <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/login/">退出登陆</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div>
+    <!-- 分析结果展示 -->
+    <h2 style="text-align: center">回归预测结果展示</h2>
+    <div class="container">
+        <!-- 总体结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">总体未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_all" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2.r2_score }}</td>
+                                        <td>{{ result2.coef }}</td>
+                                        <td>{{ result2.intercept }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px;">
+                                <p style="font-size: 16px; line-height: 1.5;">
+                                    在回归分析中，R2分数（R-squared score）是用于评估回归模型拟合优度的指标，
+                                    它表示模型拟合数据的程度，取值范围在0和1之间，越接近1表示模型对数据的拟合越好。
+                                    <br>回归预测的R2分数为0.8424，这意味着该回归模型对数据的拟合效果比较好。
+                                    <br>回归模型的系数表示自变量的变化对因变量的影响程度，而截距表示在自变量为0时，因变量的取值。
+                                    <br>回归模型的系数为2.1423843e-05，这意味着，当自变量每增加1个单位时，因变量会增加2.1423843e-05个单位。
+                                    <br>截距为-27923.18969875418，在问政数量预测模型中，这个值没有什么具体含义。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 赣州结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">赣州市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_ganzhou" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_ganzhou.r2_score_ganzhou }}</td>
+                                        <td>{{ result2_ganzhou.coef_ganzhou }}</td>
+                                        <td>{{ result2_ganzhou.intercept_ganzhou }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px;">
+                                <p style="font-size: 16px; line-height: 1.5;">
+                                    R2分数比较低，可能有以下几个原因：
+                                    <br>&emsp;&emsp;自变量和因变量之间存在非线性关系，但是回归模型却是基于线性关系来建模的，导致模型无法很好地拟合数据。
+                                    <br>&emsp;&emsp;数据中存在噪声或异常值，这些数据点可能会对模型的拟合效果产生负面影响。
+                                    <br>&emsp;&emsp;模型中使用的自变量不够充分或者不够相关，导致无法很好地预测因变量。
+                                    <br>&emsp;&emsp;模型的参数估计不准确或者模型的结构不够合理，导致模型无法很好地拟合数据。
+                                    <br>在这里，初步猜测原因是自变量和因变量之间存在非线性关系
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 贵港结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">贵港市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_guigang" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_guigang.r2_score_guigang }}</td>
+                                        <td>{{ result2_guigang.coef_guigang }}</td>
+                                        <td>{{ result2_guigang.intercept_guigang }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 惠州结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">惠州市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_huizhou" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_huizhou.r2_score_huizhou }}</td>
+                                        <td>{{ result2_huizhou.coef_huizhou }}</td>
+                                        <td>{{ result2_huizhou.intercept_huizhou }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 济宁结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">济宁市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_jining" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_jining.r2_score_jining }}</td>
+                                        <td>{{ result2_jining.coef_jining }}</td>
+                                        <td>{{ result2_jining.intercept_jining }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 泸州结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">泸州市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_luzhou" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_luzhou.r2_score_luzhou }}</td>
+                                        <td>{{ result2_luzhou.coef_luzhou }}</td>
+                                        <td>{{ result2_luzhou.intercept_luzhou }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 南阳结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">南阳市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_nanyang" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_nanyang.r2_score_nanyang }}</td>
+                                        <td>{{ result2_nanyang.coef_nanyang }}</td>
+                                        <td>{{ result2_nanyang.intercept_nanyang }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 内江结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">内江市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_neijiang" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_neijiang.r2_score_neijiang }}</td>
+                                        <td>{{ result2_neijiang.coef_neijiang }}</td>
+                                        <td>{{ result2_neijiang.intercept_neijiang }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 十堰结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">十堰市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_shiyan" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_shiyan.r2_score_shiyan }}</td>
+                                        <td>{{ result2_shiyan.coef_shiyan }}</td>
+                                        <td>{{ result2_shiyan.intercept_shiyan }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 温州结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">温州市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_wenzhou" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_wenzhou.r2_score_wenzhou }}</td>
+                                        <td>{{ result2_wenzhou.coef_wenzhou }}</td>
+                                        <td>{{ result2_wenzhou.intercept_wenzhou }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 永州结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">永州市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_yongzhou" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_yongzhou.r2_score_yongzhou }}</td>
+                                        <td>{{ result2_yongzhou.coef_yongzhou }}</td>
+                                        <td>{{ result2_yongzhou.intercept_yongzhou }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 肇庆结果 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">肇庆市未来一年的趋势</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="qushi_zhaoqing" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-12"
+                                 style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+                                <table class="my-table" style="margin: auto">
+                                    <tr>
+                                        <th>R2分数</th>
+                                        <th>系数</th>
+                                        <th>截距</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ result2_zhaoqing.r2_score_zhaoqing }}</td>
+                                        <td>{{ result2_zhaoqing.coef_zhaoqing }}</td>
+                                        <td>{{ result2_zhaoqing.intercept_zhaoqing }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<footer>
+    <div class="container-fluid" style="padding-top: 40px;">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="jumbotron">
+                    <div class="container">
+                        <center>
+                            <p>Copyright [2023] by [SongHuawei] </p>
+                            <p><a href="http://xxxy.lzu.edu.cn/" target="_blank">兰州大学信息科学与工程学院</a></p>
+                            <p><a href="https://github.com/SongHuawei" target="_blank">我的GitHub</a></p>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>
+
+<!-- all -->
+<script>
+    var data_set1 = JSON.parse('{{ predict_json|safe }}');
+    var time_set1 = [];
+    var count_set1 = [];
+    for (var i1 = 0; i1 < data_set1.length; i1++) {
+        time_set1.push(data_set1[i1].date);
+        count_set1.push(data_set1[i1].value);
+    }
+    var myChart_all = echarts.init(document.getElementById('qushi_all'));
+    var qushi_all = {
+        title: {
+            text: '折线图——表示总体未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set1
+        },
+        yAxis: {
+            min: function (count_set1) {
+                return count_set1.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set1
+        }]
+    };
+    myChart_all.setOption(qushi_all);
+</script>
+<!-- 赣州市 -->
+<script>
+    var data_set2 = JSON.parse('{{ predict_json_ganzhou|safe }}');
+    var time_set2 = [];
+    var count_set2 = [];
+    for (var i2 = 0; i2 < data_set2.length; i2++) {
+        time_set2.push(data_set2[i2].date);
+        count_set2.push(data_set2[i2].value);
+    }
+    var myChart_ganzhou = echarts.init(document.getElementById('qushi_ganzhou'));
+    var qushi_ganzhou = {
+        title: {
+            text: '折线图——表示赣州市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set2
+        },
+        yAxis: {
+            min: function (count_set2) {
+                return count_set2.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set2
+        }]
+    };
+    myChart_ganzhou.setOption(qushi_ganzhou);
+</script>
+<!-- 贵港市 -->
+<script>
+    var data_set3 = JSON.parse('{{ predict_json_guigang|safe }}');
+    var time_set3 = [];
+    var count_set3 = [];
+    for (var i3 = 0; i3 < data_set3.length; i3++) {
+        time_set3.push(data_set3[i3].date);
+        count_set3.push(data_set3[i3].value);
+    }
+    var myChart_guigang = echarts.init(document.getElementById('qushi_guigang'));
+    var qushi_guigang = {
+        title: {
+            text: '折线图——表示贵港市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set3
+        },
+        yAxis: {
+            min: function (count_set3) {
+                return count_set3.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set3
+        }]
+    };
+    myChart_guigang.setOption(qushi_guigang);
+</script>
+<!-- 惠州市 -->
+<script>
+    var data_set4 = JSON.parse('{{ predict_json_huizhou|safe }}');
+    var time_set4 = [];
+    var count_set4 = [];
+    for (var i4 = 0; i4 < data_set4.length; i4++) {
+        time_set4.push(data_set4[i4].date);
+        count_set4.push(data_set4[i4].value);
+    }
+    var myChart_huizhou = echarts.init(document.getElementById('qushi_huizhou'));
+    var qushi_huizhou = {
+        title: {
+            text: '折线图——表示惠州市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set4
+        },
+        yAxis: {
+            min: function (count_set4) {
+                return count_set4.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set4
+        }]
+    };
+    myChart_huizhou.setOption(qushi_huizhou);
+</script>
+<!-- 济宁市 -->
+<script>
+    var data_set5 = JSON.parse('{{ predict_json_jining|safe }}');
+    var time_set5 = [];
+    var count_set5 = [];
+    for (var i5 = 0; i5 < data_set5.length; i5++) {
+        time_set5.push(data_set5[i5].date);
+        count_set5.push(data_set5[i5].value);
+    }
+    var myChart_jining = echarts.init(document.getElementById('qushi_jining'));
+    var qushi_jining = {
+        title: {
+            text: '折线图——表示济宁市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set5
+        },
+        yAxis: {
+            min: function (count_set5) {
+                return count_set5.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set5
+        }]
+    };
+    myChart_jining.setOption(qushi_jining);
+</script>
+<!-- 泸州市 -->
+<script>
+    var data_set6 = JSON.parse('{{ predict_json_luzhou|safe }}');
+    var time_set6 = [];
+    var count_set6 = [];
+    for (var i6 = 0; i6 < data_set6.length; i6++) {
+        time_set6.push(data_set6[i6].date);
+        count_set6.push(data_set6[i6].value);
+    }
+    var myChart_luzhou = echarts.init(document.getElementById('qushi_luzhou'));
+    var qushi_luzhou = {
+        title: {
+            text: '折线图——表示泸州市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set6
+        },
+        yAxis: {
+            min: function (count_set6) {
+                return count_set6.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set6
+        }]
+    };
+    myChart_luzhou.setOption(qushi_luzhou);
+</script>
+<!-- 南阳市 -->
+<script>
+    var data_set7 = JSON.parse('{{ predict_json_nanyang|safe }}');
+    var time_set7 = [];
+    var count_set7 = [];
+    for (var i7 = 0; i7 < data_set7.length; i7++) {
+        time_set7.push(data_set7[i7].date);
+        count_set7.push(data_set7[i7].value);
+    }
+    var myChart_nanyang = echarts.init(document.getElementById('qushi_nanyang'));
+    var qushi_nanyang = {
+        title: {
+            text: '折线图——表示南阳市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set7
+        },
+        yAxis: {
+            min: function (count_set7) {
+                return count_set7.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set7
+        }]
+    };
+    myChart_nanyang.setOption(qushi_nanyang);
+</script>
+<!-- 内江市 -->
+<script>
+    var data_set8 = JSON.parse('{{ predict_json_neijiang|safe }}');
+    var time_set8 = [];
+    var count_set8 = [];
+    for (var i8 = 0; i8 < data_set8.length; i8++) {
+        time_set8.push(data_set8[i8].date);
+        count_set8.push(data_set8[i8].value);
+    }
+    var myChart_neijiang = echarts.init(document.getElementById('qushi_neijiang'));
+    var qushi_neijiang = {
+        title: {
+            text: '折线图——表示内江市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set8
+        },
+        yAxis: {
+            min: function (count_set8) {
+                return count_set8.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set8
+        }]
+    };
+    myChart_neijiang.setOption(qushi_neijiang);
+</script>
+<!-- 十堰市 -->
+<script>
+    var data_set9 = JSON.parse('{{ predict_json_shiyan|safe }}');
+    var time_set9 = [];
+    var count_set9 = [];
+    for (var i9 = 0; i9 < data_set9.length; i9++) {
+        time_set9.push(data_set9[i9].date);
+        count_set9.push(data_set9[i9].value);
+    }
+    var myChart_shiyan = echarts.init(document.getElementById('qushi_shiyan'));
+    var qushi_shiyan = {
+        title: {
+            text: '折线图——表示十堰市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set9
+        },
+        yAxis: {
+            min: function (count_set9) {
+                return count_set9.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set9
+        }]
+    };
+    myChart_shiyan.setOption(qushi_shiyan);
+</script>
+<!-- 温州市 -->
+<script>
+    var data_set10 = JSON.parse('{{ predict_json_wenzhou|safe }}');
+    var time_set10 = [];
+    var count_set10 = [];
+    for (var i10 = 0; i10 < data_set10.length; i10++) {
+        time_set10.push(data_set10[i10].date);
+        count_set10.push(data_set10[i10].value);
+    }
+    var myChart_wenzhou = echarts.init(document.getElementById('qushi_wenzhou'));
+    var qushi_wenzhou = {
+        title: {
+            text: '折线图——表示温州市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set10
+        },
+        yAxis: {
+            min: function (count_set10) {
+                return count_set10.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set10
+        }]
+    };
+    myChart_wenzhou.setOption(qushi_wenzhou);
+</script>
+<!-- 永州市 -->
+<script>
+    var data_set11 = JSON.parse('{{ predict_json_yongzhou|safe }}');
+    var time_set11 = [];
+    var count_set11 = [];
+    for (var i11 = 0; i11 < data_set11.length; i11++) {
+        time_set11.push(data_set11[i11].date);
+        count_set11.push(data_set11[i11].value);
+    }
+    var myChart_yongzhou = echarts.init(document.getElementById('qushi_yongzhou'));
+    var qushi_yongzhou = {
+        title: {
+            text: '折线图——表示永州市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set11
+        },
+        yAxis: {
+            min: function (count_set11) {
+                return count_set11.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set11
+        }]
+    };
+    myChart_yongzhou.setOption(qushi_yongzhou);
+</script>
+<!-- 肇庆市 -->
+<script>
+    var data_set12 = JSON.parse('{{ predict_json_zhaoqing|safe }}');
+    var time_set12 = [];
+    var count_set12 = [];
+    for (var i12 = 0; i12 < data_set12.length; i12++) {
+        time_set12.push(data_set12[i12].date);
+        count_set12.push(data_set12[i12].value);
+    }
+    var myChart_zhaoqing = echarts.init(document.getElementById('qushi_zhaoqing'));
+    var qushi_zhaoqing = {
+        title: {
+            text: '折线图——表示肇庆市未来一年的投诉量预测'
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            },
+            {
+                type: 'slider'
+            }
+        ],
+        tooltip: {},
+        legend: {
+            data: ['时间——投诉量']
+        },
+        xAxis: {
+            data: time_set12
+        },
+        yAxis: {
+            min: function (count_set12) {
+                return count_set12.min;
+            }
+        },
+        series: [{
+            name: '投诉量',
+            type: 'line',
+            data: count_set12
+        }]
+    };
+    myChart_zhaoqing.setOption(qushi_zhaoqing);
+</script>

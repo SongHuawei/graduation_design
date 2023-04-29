@@ -1,0 +1,12 @@
+Django==4.2
+jieba==0.42.1
+matplotlib==3.2.2
+nltk==3.5
+numpy==1.18.5
+numpy==1.23.0
+openpyxl==3.0.4
+pandas==1.0.5
+PyMySQL==1.0.3
+scikit_learn==0.23.1
+snownlp==0.12.3
+wordcloud==1.8.2.2

@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>分类结果</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1/css/bootstrap.min.css' %}">
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-3.4.1/js/bootstrap.min.js' %}"></script>
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+
+        .overflow {
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .overflow:hover {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: initial;
+        }
+
+        .my-table {
+            border-collapse: collapse;
+        }
+
+        .my-table th, .my-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .my-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/user_show/"> 政务服务信息查询系统 </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="/user_display/" target="_blank">信息展示</a></li>
+                <li><a href="/user_charts/" target="_blank">信息图表</a></li>
+                <!--<li><a href="/display_1/" target="_blank">分析结果</a></li>-->
+                <li><a href="/display_2/" target="_blank">文本分类</a></li>
+                <li><a href="/display_3/" target="_blank">回归预测</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">登录成功（普通用户） <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/login/">退出登陆</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div>
+    <!-- 分析结果展示 -->
+    <h2 style="text-align: center">文本分类结果展示</h2>
+    <div class="container">
+        <!-- 分析结果1 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">评价指标</div>
+            <div class="panel-body">
+                <table class="my-table" style="margin: auto">
+                    <tr>
+                        <th>准确率</th>
+                        <th>精确率</th>
+                        <th>召回率</th>
+                        <th>F1 值</th>
+                    </tr>
+                    <tr>
+                        <td>{{ result1.accuracy }}</td>
+                        <td>{{ result1.precision }}</td>
+                        <td>{{ result1.recall }}</td>
+                        <td>{{ result1.f1 }}</td>
+                    </tr>
+                </table>
+                <div style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+                    <p style="font-size: 16px; line-height: 1.3;">
+                        文本分类需要手工为数据进行标签标注，因此这里仅选取了1000条数据进行训练。<br>
+                        准确率：准确率是分类器正确分类的文本数量占总文本数量的比例。它的计算公式为：<br>
+                        &emsp;&emsp;准确率 = (真阳性 + 真阴性) / (真阳性 + 假阳性 + 真阴性 + 假阴性)<br>
+                        &emsp;&emsp;&emsp;&emsp;真阳性（True Positive）表示实际为正例的文本被正确预测为正例的数量；<br>
+                        &emsp;&emsp;&emsp;&emsp;假阳性（False Positive）表示实际为负例的文本被错误预测为正例的数量；<br>
+                        &emsp;&emsp;&emsp;&emsp;真阴性（True Negative）表示实际为负例的文本被正确预测为负例的数量；<br>
+                        &emsp;&emsp;&emsp;&emsp;假阴性（False Negative）表示实际为正例的文本被错误预测为负例的数量。<br>
+                        &emsp;&emsp;在分类器中，准确率为 0.51，这意味着该分类器正确分类了一半的文本。<br>
+                        精确率：精确率是指分类器预测为正例的文本中实际为正例的比例。它的计算公式为：<br>
+                        &emsp;&emsp;精确率 = 真阳性 / (真阳性 + 假阳性)<br>
+                        &emsp;&emsp;在分类器中，精确率为 0.4707，这意味着分类器预测为正例的文本中约 47% 的文本实际上是正例。<br>
+                        召回率：召回率是指实际为正例的文本中被分类器正确预测为正例的比例。它的计算公式为：<br>
+                        &emsp;&emsp;召回率 = 真阳性 / (真阳性 + 假阴性)<br>
+                        &emsp;&emsp;在分类器中，召回率为 0.51，这意味着分类器正确地预测了约一半实际为正例的文本。<br>
+                        F1 值：F1 值是精确率和召回率的调和平均值，它可以综合考虑分类器的准确性和召回率。它的计算公式为：<br>
+                        &emsp;&emsp;F1 值 = 2 * 精确率 * 召回率 / (精确率 + 召回率)<br>
+                        &emsp;&emsp;在分类器中，F1 值为 0.4186，这意味着分类器的性能需要进一步优化。<br>
+                        总体而言，在分类器中准确率和召回率的值相等，但精确率和 F1 值比较低，这意味着该分类器可能存在较多的假阳性和假阴性预测，需要进一步优化。<br>
+                    <hr>
+                    本代码主要是对文本数据进行分类，朴素贝叶斯分类器是一种简单而有效的分类方法，但是也有一些可以优化的地方：<br>
+                    &emsp;&emsp;特征工程的优化：使用 TF-IDF 进行特征提取是一种常见的方法，但是可以尝试使用其他的文本特征提取方法，如词向量、LDA 等，来提高模型的性能。<br>
+                    &emsp;&emsp;模型的优化：你可以尝试使用其他的分类器来代替朴素贝叶斯分类器，如 SVM、随机森林、神经网络等，来提高模型的准确率和鲁棒性。<br>
+                    &emsp;&emsp;数据增强的优化：你可以尝试使用一些数据增强技术，如数据平衡技术、数据扩增技术等，来增加训练数据的数量和多样性，从而提高模型的泛化能力。<br>
+                    &emsp;&emsp;超参数的优化：你可以尝试使用网格搜索、随机搜索等方法，来寻找最优的超参数组合，从而优化模型的性能。<br>
+                    &emsp;&emsp;错误分析的优化：你可以对分类器的错误样本进行更深入的分析，找出分类器存在的问题，并针对性地进行优化，以提高模型的性能。<br>
+                    需要注意的是，优化模型是一个迭代的过程，需要不断尝试不同的方法，并进行实验和评估，才能找到最优的解决方案。<br>
+                    <hr>
+                    &emsp;&emsp;当然，标注数据的质量和准确性会直接影响模型的指标。如果标注数据存在错误或者不准确的情况，那么训练出的模型也会受到影响，表现出较差的性能。
+                    例如，如果标注数据中存在标签不准确或者标注不清晰的情况，那么训练出的模型可能会出现分类错误的情况，导致准确率、精确率、召回率等指标下降。
+                    因此，在进行数据标注时，需要尽可能保证标注数据的准确性和质量，可以通过多人标注、专家审核等方式来提高标注数据的质量。
+                    另外，还可以使用半监督学习等方法来减少标注数据的工作量，同时提高标注数据的质量。
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- 分析结果2 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">混淆矩阵</div>
+            <div class="panel-body">
+                <table class="my-table" style="margin: auto">
+                    {% for row in result1.cm %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+                    <p style="font-size: 16px; line-height: 1.5;">
+                        混淆矩阵（Confusion Matrix）是一种常用的分类模型评估方法，用于展示模型在测试数据上的分类结果。<br>
+                        &emsp;&emsp;混淆矩阵是一个二维矩阵，行表示实际类别，列表示预测类别，每个元素表示实际类别和预测类别的组合。
+                        在二分类问题中，混淆矩阵通常由四个元素构成，分别是：<br>
+                        &emsp;&emsp;True Positive（TP）：实际为正例，模型预测为正例。<br>
+                        &emsp;&emsp;False Positive（FP）：实际为负例，模型预测为正例。<br>
+                        &emsp;&emsp;False Negative（FN）：实际为正例，模型预测为负例。<br>
+                        &emsp;&emsp;True Negative（TN）：实际为负例，模型预测为负例。<br>
+                        根据上述定义，可以将混淆矩阵表示为：<br>
+                        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;预测为正例&emsp;&emsp;&emsp;&emsp;预测为负例<br>
+                        实际为正例&emsp;&emsp;&emsp;TP&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FN<br>
+                        实际为负例&emsp;&emsp;&emsp;FP&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;TN<br>
+                        其中，TP、FP、FN、TN 的具体含义如下：<br>
+                        &emsp;&emsp;TP（True Positive）：真正例，即模型正确预测出的正例数量。<br>
+                        &emsp;&emsp;FP（False Positive）：假正例，即模型错误地将负例预测为正例的数量。<br>
+                        &emsp;&emsp;FN（False Negative）：假反例，即模型错误地将正例预测为负例的数量。<br>
+                        &emsp;&emsp;TN（True Negative）：真反例，即模型正确预测出的负例数量。<br>
+                    <hr>
+                    对于上述给出的混淆矩阵，其中每个元素的含义如下：<br>
+                    &emsp;&emsp;第一行表示实际为第一类的样本，其中有 91 个被模型正确预测为第一类，11 个被模型错误地预测为第三类。<br>
+                    &emsp;&emsp;第二行表示实际为第二类的样本，其中有 14 个被模型正确预测为第二类，其余被模型错误地预测为其他类别。<br>
+                    &emsp;&emsp;第三行表示实际为第三类的样本，其中有 11 个被模型正确预测为第三类，73 个被模型错误地预测为第一类。<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- 分析结果3 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">分类报告</div>
+            <div class="panel-body">
+                <pre style="text-align: center">{{ result1.cr }}</pre>
+                <div style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+                    <p style="font-size: 16px; line-height: 1.5;">
+                        Precision（精确率）：表示分类器预测为某一类别的样本中，实际属于该类别的比例。<br>
+                        &emsp;&emsp;对于本报告中的每个类别，精确率的计算方式为 TP / (TP + FP)， 其中 TP 表示该类别被正确预测的样本数，FP 表示被错误预测为该类别的样本数。<br>
+                        &emsp;&emsp;例如，对于咨询类别，精确率为 0.51，表示分类器将 102 个样本预测为咨询类别，其中有 52 个样本真正属于咨询类别，另外 50
+                        个样本被错误预测为咨询类别。<br>
+                        Recall（召回率）：表示实际属于某一类别的样本中，被分类器正确预测出来的比例。<br>
+                        &emsp;&emsp;对于本报告中的每个类别，召回率的计算方式为 TP / (TP + FN)，其中 TP 表示该类别被正确预测的样本数，FN
+                        表示实际属于该类别但被错误预测为其他类别的样本数。<br>
+                        &emsp;&emsp;例如，对于咨询类别，召回率为 0.89，表示分类器正确预测出了 102 个咨询类别的样本中的 91 个样本。<br>
+                        F1-score（F1 值）：是精确率和召回率的调和平均数，可以综合衡量分类器的性能。<br>
+                        &emsp;&emsp;对于本报告中的每个类别，F1 值的计算方式为 2 * (precision * recall) / (precision + recall)。<br>
+                        &emsp;&emsp;例如，对于咨询类别，F1 值为 0.65，表示精确率和召回率的综合表现较为一致。<br>
+                        Support（支持数）：表示每个类别在数据集中的样本数，即该类别的样本数量。<br>
+                        &emsp;&emsp;例如，对于咨询类别，支持数为 102，表示该类别在数据集中有 102 个样本。<br>
+                        Accuracy（准确率）：表示分类器在所有样本中正确分类的比例。<br>
+                        &emsp;&emsp;本报告中的 accuracy 为 0.51，表示分类器在 200 个样本中正确分类了 102 个。<br>
+                        macro avg：对所有类别计算精确率、召回率和 F1 值的平均值，每个类别的权重相同。<br>
+                        &emsp;&emsp;在这个分类报告中，macro avg 的精确率、召回率和 F1 值分别为 0.34、0.34 和 0.29。<br>
+                        weighted avg：对所有类别计算精确率、召回率和 F1 值的加权平均值，权重为每个类别的支持数。<br>
+                        &emsp;&emsp;在这个分类报告中，weighted avg 的精确率、召回率和 F1 值分别为 0.47、0.51 和 0.42。<br>
+                        macro avg 可以帮助我们了解每个类别的性能是否相似，而 weighted avg 可以更加重视样本数量较多的类别对整体性能的影响。<br>
+                        &emsp;&emsp;在这个报告中，weighted avg 的精确率、召回率和 F1 值都比 macro avg 高，这是因为咨询类别的支持数最多，其对整体性能的贡献最大。<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- 分析结果4 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">ROC 曲线</div>
+            <div class="panel-body">
+                <img src="/static/img/roc_curve.png" alt="ROC 曲线" style="display: block; margin: auto">
+                <div style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+                    <p style="font-size: 16px; line-height: 1.5;">
+                        ROC（Receiver Operating Characteristic）曲线是一种用于评估二元分类器（如逻辑回归、支持向量机等）性能的工具，
+                        它以真正例率（True Positive Rate，TPR）为纵轴，以假正例率（False Positive Rate，FPR）为横轴绘制出的曲线。
+                        <br>在ROC曲线上，分类器的表现越好，曲线越靠近左上角，AUC（Area Under the ROC Curve）的值也越大。
+                        <br>当AUC=1时，表示分类器完美预测，即没有误分类。当AUC=0.5时，表示分类器的表现等于随机猜测。
+                        <br>通过观察ROC曲线，我们可以选择一个适当的分类阈值，使得分类器的预测结果最优。通常情况下，我们希望选择的分类阈值能够在保证高召回率的同时，尽量减少误分类率。
+                        如果ROC曲线出现拐点或者明显的斜率变化，那么这个拐点或变化点的位置可能是一个比较好的分类阈值。
+                        而如果ROC曲线非常平滑，则说明分类器的性能比较稳定，可以选择任意一个适合的分类阈值。
+                        <br>AUC值为0.5左右，这意味着该分类器对于三个类别的预测性能较差。
+                        具体来说，如果随机选择一个正样本和一个负样本，分类器正确区分正样本和负样本的概率只有0.48，而这个概率比随机猜测略好一点。
+                        因此，分类器需要进一步改进以提高其性能。
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- 分析结果5 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">平均精确度 (MAP) 和归一化折损累积增益 (NDCG)</div>
+            <div class="panel-body">
+                <table class="my-table" style="margin: auto">
+                    <tr>
+                        <th>MAP</th>
+                        <th>NDCG</th>
+                    </tr>
+                    <tr>
+                        <td>{{ result1.map }}</td>
+                        <td>{{ result1.ndcg }}</td>
+                    </tr>
+                </table>
+                <div style="background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+                    <p style="font-size: 16px; line-height: 1.5;">
+                        平均精确度（Mean Average Precision，MAP）和归一化折损累积增益（Normalized Discounted Cumulative Gain，NDCG）是用于评估排序模型性能的指标。
+                        <br>平均精确度（MAP）用于评估一个排名模型的平均预测精度。它考虑了排名列表中所有相关文档的位置，越靠前的位置权重越高。
+                        <br>&emsp;&emsp;MAP的取值范围在0和1之间，越接近1表示模型的性能越好。平均精确度为0.4543，这意味着排名模型的性能比较一般，需要进一步改进。
+                        <br>归一化折损累积增益（NDCG）也是一种用于评估排名模型性能的指标，它考虑了排名列表中的相关文档的位置以及它们的相关性。
+                        <br>&emsp;&emsp;NDCG的取值范围在0和1之间，越接近1表示模型的性能越好。归一化折损累积增益为0.7768，这意味着排名模型的性能比平均水平要好一些，但仍有提升的空间。
+                        <br>综上所述，模型需要进一步改进以提高其性能，特别是在平均精确度方面。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<footer>
+    <div class="container-fluid" style="padding-top: 40px;">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div class="jumbotron">
+                    <div class="container">
+                        <center>
+                            <p>Copyright [2023] by [SongHuawei] </p>
+                            <p><a href="http://xxxy.lzu.edu.cn/" target="_blank">兰州大学信息科学与工程学院</a></p>
+                            <p><a href="https://github.com/SongHuawei" target="_blank">我的GitHub</a></p>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

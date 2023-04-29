@@ -1,0 +1,94 @@
+{% extends 'admin_layout.html' %}
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px; height: 40px">
+            <a class="btn btn-success" href="/admin_add/" target="_blank">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                新建政务服务信息
+            </a>
+            <a class="btn btn-info" href="/admin_upload/" target="_blank">
+                <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                批量上传信息
+            </a>
+        </div>
+        <div style="margin-bottom: 10px; height: 40px">
+            <form method="get" class="form-inline">
+                <div style="float:left; width: 150px">
+                    <div class="form-group">
+                        <select class="form-control" name="c">
+                            <option value="">请选择城市</option>
+                            <option value="赣州市">赣州市</option>
+                            <option value="贵港市">贵港市</option>
+                            <option value="惠州市">惠州市</option>
+                            <option value="济宁市">济宁市</option>
+                            <option value="泸州市">泸州市</option>
+                            <option value="南阳市">南阳市</option>
+                            <option value="内江市">内江市</option>
+                            <option value="十堰市">十堰市</option>
+                            <option value="温州市">温州市</option>
+                            <option value="永州市">永州市</option>
+                            <option value="肇庆市">肇庆市</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="float:left;width: 230px">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="输入标题关键字....">
+                    </div>
+                </div>
+                <div style="float:left">
+                    <div class="input-group">
+                        <button class="btn btn-default" type="submit">搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                问政信息列表
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>所在市</th>
+                    <th>内容</th>
+                    <th>相关单位</th>
+                    <th>链接</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <th style="width: 10%">{{ obj.City }}</th>
+                        <td style="width: 55%">{{ obj.Title }}</td>
+                        <td style="width: 15%">{{ obj.RepDep }}</td>
+                        <td style="width: 10%"><a class="btn btn" href="{{ obj.URL }}" target="_blank">点击跳转</a></td>
+                        <td style="width: 10%">
+                            <a class="btn btn-primary btn-xs" href="/admin_edit/{{ obj.id }}/" target="_blank">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="/admin_delete/{{ obj.id }}/">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="container">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    {{ page_string }}
+                    <li>
+                        <form style="float: left;margin-right: 10px" method="get">
+                            <input type="text" style="position:relative;float:left;display:inline-block;width: 100px"
+                                   name="page" class="form-control" placeholder="页码">
+                            <span>
+                        <button class="btn btn-primary" type="submit">跳转</button>
+                    </span>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+{% endblock %}

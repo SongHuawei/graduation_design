@@ -1,0 +1,315 @@
+{% extends 'user_layout.html' %}
+{% block content %}
+    <!-- 选择城市和起止时间，传回user_charts函数 -->
+    <div style="display: flex; justify-content: center; align-items: center; height: auto">
+        <form method="get" class="search-form" action="/api_data/">
+            <div>
+                <div class="form-group" style="margin: auto">
+                    <select name="city" id="city" class="form-control">
+                        <option value="all">全部城市</option>
+                        <option value="赣州市">赣州市</option>
+                        <option value="贵港市">贵港市</option>
+                        <option value="惠州市">惠州市</option>
+                        <option value="济宁市">济宁市</option>
+                        <option value="泸州市">泸州市</option>
+                        <option value="南阳市">南阳市</option>
+                        <option value="内江市">内江市</option>
+                        <option value="十堰市">十堰市</option>
+                        <option value="温州市">温州市</option>
+                        <option value="永州市">永州市</option>
+                        <option value="肇庆市">肇庆市</option>
+                    </select>
+                </div>
+                <div class="layui-col-md3" style="margin: auto">
+                    <!--<input type="datetime-local" class="form-control" placeholder="日期" name="Time"/>-->
+                    <div class="layui-input-inline" style="margin: auto">
+                        <input type="text" id="begin_date" name="begin_date" placeholder="起始时间" class="layui-input"
+                               style="width: 200px; height:30px; font-size: 11px ">
+                    </div>
+                    <div class="layui-input-inline" style="margin: auto">
+                        <input type="text" id="end_date" name="end_date" placeholder="截止时间" class="layui-input"
+                               style=" width: 200px; height: 30px; font-size: 11px ">
+                    </div>
+                </div>
+                <!-- 初始化日期选择器的JavaScript代码 -->
+                <script>
+                    layui.use('laydate', function () {
+                        var laydate = layui.laydate;
+                        //var now = new Date(); // 获取当前时间
+                        //var nowStr = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate(); // 格式化日期
+                        // 初始化开始日期选择器
+                        laydate.render({
+                            elem: '#begin_date',
+                            format: 'yyyy-MM-dd', // 日期格式
+                            //value: nowStr, // 设定初始值
+                            trigger: 'click', // 点击触发选择器
+                            done: function (value) {
+                                // 选择后的回调函数
+                                console.log(value);
+                            }
+                        });
+                        // 初始化结束日期选择器
+                        laydate.render({
+                            elem: '#end_date',
+                            format: 'yyyy-MM-dd', // 日期格式
+                            //value: nowStr, // 设定初始值
+                            trigger: 'click', // 点击触发选择器
+                            done: function (value) {
+                                // 选择后的回调函数
+                                console.log(value);
+                            }
+                        });
+                    });
+                </script>
+                <div class="input-group" style="margin: auto">
+                    <button id="do_search" class="btn btn-default" type="submit">查 询</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 图表展示 -->
+    <div class="container">
+        <!-- 折线图：表示不同时间（yyyy-mm）问政信息数量 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">不同时间问政信息数量</div>
+            <div class="panel-body">
+                <div id="chart1" style="width: 100%; height: 300px"></div>
+            </div>
+        </div>
+        <!-- 柱状图：表示问政时间与回复时间的时间间隔 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">不同时间问政信息数量</div>
+            <div class="panel-body">
+                <div id="chart2" style="width: 100%; height: 300px"></div>
+            </div>
+        </div>
+        <!-- 饼图：表示该城市不同年份与月份的投诉数量 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">不同年份与月份的投诉数量</div>
+            <div class="panel-body">
+                <div id="chart3" style="width: 100%; height: 600px"></div>
+            </div>
+        </div>
+        <!-- 词云图：按Title分词生成 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">最近10000条问政信息标题生成词云图</div>
+            <div class="panel-body">
+                <img style="margin: 0 auto; display: block" src="/static/img/chart4_title.png" alt="当前图片未生成">
+            </div>
+        </div>
+        <!-- 词云图：按Content分词生成 -->
+        <div class="panel panel-default">
+            <div class="panel-heading">最近10000条问政信息内容生成词云图</div>
+            <div class="panel-body">
+                <img style="margin: 0 auto; display: block" src="/static/img/chart4_content.png" alt="当前图片未生成">
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">情感分析图</div>
+            <div class="panel-body">
+                <div id="chart5" style="width: 100%; height: 300px"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <!-- 这里构造折线图 -->
+    <script>
+        //接收数据，测试发现，需要用safe将标点符号保持原样不要转义
+        //var data1_str = '{{ data1|safe }}'
+        //console.log(data1_str)
+        //获取初始数据
+        var data_set1 = JSON.parse('{{ data1|safe }}');
+        //console.log(data_set1)
+        //处理折线图数据
+        var time_set1 = [];
+        var count_set1 = [];
+        for (var i1 = 0; i1 < data_set1.length; i1++) {
+            time_set1.push(data_set1[i1].date1);
+            count_set1.push(data_set1[i1].count1);
+        }
+        //console.log(time_set1)
+        //console.log(count_set1)
+        //绘制折线图
+        var myChart1 = echarts.init(document.getElementById('chart1'));
+        var chart1 = {
+            title: {
+                text: '折线图——表示投诉数量'
+            },
+            dataZoom: [
+                {
+                    type: 'inside'
+                },
+                {
+                    type: 'slider'
+                }
+            ],
+            tooltip: {},
+            legend: {
+                data: ['时间——投诉量']
+            },
+            xAxis: {
+                data: time_set1
+            },
+            yAxis: {},
+            series: [{
+                name: '投诉量',
+                type: 'line',
+                data: count_set1
+            }]
+        };
+        myChart1.setOption(chart1);
+    </script>
+    <!-- 这里构造柱状图 -->
+    <script>
+        //接收初始数据，内部数据使用单引号
+        //var data2_str = '{{ data2|safe }}'
+        //console.log(data2_str);
+        //处理初始数据
+        var data_set2 = JSON.parse('{{ data2|safe }}');
+        //console.log(data_set2)
+        //处理数据
+        var time_set2 = [];
+        var count_set2 = [];
+        for (var i2 = 0; i2 < data_set2.length; i2++) {
+            time_set2.push(data_set2[i2].Time);
+            if (data_set2[i2].count2 < 0)
+                data_set2[i2].count2 *= -1
+            count_set2.push(data_set2[i2].count2);
+        }
+        //console.log(time_set2)
+        //console.log(count_set2)
+        //绘制折线图
+        var myChart2 = echarts.init(document.getElementById('chart2'));
+        var chart2 = {
+            title: {
+                text: '柱状图——表示平均处理时间（单位：天）'
+            },
+            dataZoom: [
+                {
+                    type: 'inside'
+                },
+                {
+                    type: 'slider'
+                }
+            ],
+            tooltip: {},
+            legend: {
+                data: ['时间——平均处理时间']
+            },
+            xAxis: {
+                data: time_set2
+            },
+            yAxis: {},
+            series: [{
+                name: '平均处理时间',
+                type: 'line',
+                data: count_set2
+            }]
+        };
+        myChart2.setOption(chart2);
+    </script>
+    <!-- 这里构造饼图 -->
+    <script>
+        //接收初始数据，内部数据使用单引号
+        //var data3_str = '{{ data3|safe }}'
+        //console.log(data3_str);
+        //处理初始数据
+        var data_set3 = JSON.parse('{{ data3|safe }}');
+        //console.log(data_set3)
+        //处理数据
+        var pie_set1 = [];
+        for (var i3 = 0; i3 < data_set3.length; i3++) {
+            var item1 = {};
+            if (data_set3[i3].count3 > 0)
+                item1.value = data_set3[i3].count3;
+            if (data_set3[i3].date3 !== null)
+                item1.name = data_set3[i3].date3;
+            else if (data_set3[i3].date3 === null)
+                item1.name = '未获取到问政时间'
+            pie_set1.push(item1);
+            //console.log(item1)
+        }
+        console.log(pie_set1)
+        //绘制饼图：本市不同时间段投诉量对比
+        var myChart3 = echarts.init(document.getElementById('chart3'));
+        var chart3 = {
+            title: {
+                text: '饼图——本市不同时间段投诉量对比',
+                subtext: '时间划分：yyyy-mm',
+                left: 'left'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            series: [
+                {
+                    name: '投诉量',
+                    type: 'pie',
+                    radius: '50%',
+                    data: pie_set1,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        myChart3.setOption(chart3);
+    </script>
+    <!-- 这里构造情感分析折线图 -->
+    <script>
+        //获取初始数据
+        var data_set5 = JSON.parse('{{ data5|safe }}');
+        console.log(data_set5)
+        //处理折线图数据
+        var time_set5 = [];
+        var count_set5 = [];
+        for (var i5 = 0; i5 < data_set5.length; i5++) {
+            time_set5.push(data_set5[i5].date5);
+            count_set5.push(data_set5[i5].sentiment);
+        }
+        console.log(time_set5)
+        console.log(count_set5)
+        //绘制折线图
+        var myChart5 = echarts.init(document.getElementById('chart5'));
+        var chart5 = {
+            title: {
+                text: '折线图——表示情感分析结果'
+            },
+            dataZoom: [
+                {
+                    type: 'inside'
+                },
+                {
+                    type: 'slider'
+                }
+            ],
+            tooltip: {},
+            legend: {
+                data: ['时间——分数（数值越大表示情感越正向）']
+            },
+            xAxis: {
+                data: time_set5
+            },
+            yAxis: {
+                min: function (count_set5) {
+                    return count_set5.min;
+                }
+            },
+            series: [{
+                name: '分数',
+                type: 'line',
+                data: count_set5
+            }]
+        };
+        myChart5.setOption(chart5);
+    </script>
+{% endblock %}
